@@ -10,8 +10,6 @@ import BasicModal from './BasicModal';
 
 export default function CustomerTable({ customersDetails}) {
 
-
-
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }}  aria-label="simple table">
@@ -38,7 +36,7 @@ export default function CustomerTable({ customersDetails}) {
                             <TableCell align="right">{"+91 " + row.mobile}</TableCell>
                             <TableCell align="right">{row.aadhar}</TableCell>
                             <TableCell align="right" >
-                                <BasicModal value="Edit" patch="true" id={row._id} />
+                                <BasicModal value="Edit" patch="true" id={row._id} customerDetailsFromCustomerTable={row} />
                             </TableCell>
                         </TableRow>
                     ))}

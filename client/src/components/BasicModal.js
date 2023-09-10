@@ -20,92 +20,79 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal({value, patch, id, edited, setEdited}) {
+export default function BasicModal({ value, patch, id, edited, setEdited, customerDetailsFromCustomerTable }) {
     const { enqueueSnackbar } = useSnackbar();
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    // const filterValues =[  ]
-
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setlastName] = useState("")
-    const [mobile, setmobile] = useState("")
-    const [aadhar, setAadhar] = useState("")
+    // Initialize state variables with values from customerDetailsFromCustomerTable so that we can able to Edit if needed 
+    const [firstName, setFirstName] = useState(customerDetailsFromCustomerTable ? customerDetailsFromCustomerTable.firstName : "");
+    const [lastName, setLastName] = useState(customerDetailsFromCustomerTable ? customerDetailsFromCustomerTable.lastName : "");
+    const [mobile, setMobile] = useState(customerDetailsFromCustomerTable ? customerDetailsFromCustomerTable.mobile : "");
+    const [aadhar, setAadhar] = useState(customerDetailsFromCustomerTable ? customerDetailsFromCustomerTable.aadhar : "");
 
     const firstNameHandler = (event) => {
-        setFirstName(event.target.value)
-    }
+        setFirstName(event.target.value);
+    };
     const lastNameHandler = (event) => {
-        setlastName(event.target.value)
-    }
+        setLastName(event.target.value);
+    };
     const mobileHandler = (event) => {
-        setmobile(event.target.value)
-    }
+        setMobile(event.target.value);
+    };
     const aadharHandler = (event) => {
-        setAadhar(event.target.value)
-    }
+        setAadhar(event.target.value);
+    };
 
     async function uploadToDatabase() {
-
         const api = `${config.endpoint}/customer`;
-        // console.log(api)
 
         const body = {
             "firstName": firstName,
             "lastName": lastName,
             "mobile": mobile,
             "aadhar": aadhar
-        }
+        };
 
-        await axios.post(api, body)
-            .then((response) => {
-                console.log(response.data)
-                enqueueSnackbar("Customer Added", { variant: "success" })
-                setEdited(!edited)
-            })
-            .catch((error) => {
-                enqueueSnackbar("couldn't able to upload to the database", { variant: "error" })
-            })
+        try {
+            const response = await axios.post(api, body);
+            console.log(response.data);
+            enqueueSnackbar("Customer Added", { variant: "success" });
+            setEdited(!edited);
+        } catch (error) {
+            enqueueSnackbar("Couldn't upload to the database", { variant: "error" });
+        }
     }
-    async function patchToDatabase() {
 
+    async function patchToDatabase() {
         const api = `${config.endpoint}/customer/${id}`;
-        // console.log(api)
 
         const body = {
             "firstName": firstName,
             "lastName": lastName,
             "mobile": mobile,
             "aadhar": aadhar
-        }
+        };
 
-        await axios.patch(api, body)
-            .then((response) => {
-                console.log(response.data)
-                enqueueSnackbar("Customer patched", { variant: "success" })
-                setEdited(!edited)
-            })
-            .catch((error) => {
-                enqueueSnackbar("couldn't able to patch customer details to the database", { variant: "error" })
-            })
+        try {
+            const response = await axios.patch(api, body);
+            console.log(response.data);
+            enqueueSnackbar("Customer patched", { variant: "success" });
+            setEdited(!edited);
+        } catch (error) {
+            enqueueSnackbar("Couldn't patch customer details to the database", { variant: "error" });
+        }
     }
 
     const addCustomerToDatabase = () => {
-
-        if( patch === "true" ){
+        if (patch === "true") {
             patchToDatabase();
-        }
-        else{
+        } else {
             uploadToDatabase();
-            
         }
         handleClose();
     }
-
-    // console.log(firstName, lastName, mobile, aadhar)
-
-
 
     return (
         <>
@@ -118,23 +105,25 @@ export default function BasicModal({value, patch, id, edited, setEdited}) {
             >
                 <Box sx={style}>
                     <Typography sx={{ textAlign: "center" }} id="modal-modal-title" variant="h6" component="h2">
-                        {value}
+                        {
+                            value === "Edit" ? `${value} Customer` : value
+                        }
                     </Typography>
-
-                    {/* <FormTextField   /> */}
-                    <Box >
+                    <Box>
                         <TextField
                             required
                             id="outlined-basic"
                             label="First Name"
                             variant="outlined"
+                            value={firstName}
                             onChange={firstNameHandler}
                             sx={{ width: "100%", marginBottom: "10px" }}
                         />
                         <TextField
                             id="outlined-basic1"
-                            label="last Name"
+                            label="Last Name"
                             variant="outlined"
+                            value={lastName}
                             onChange={lastNameHandler}
                             sx={{ width: "100%", marginBottom: "10px" }}
                         />
@@ -142,6 +131,7 @@ export default function BasicModal({value, patch, id, edited, setEdited}) {
                             id="outlined-basic2"
                             label="Mobile Number"
                             variant="outlined"
+                            value={mobile}
                             onChange={mobileHandler}
                             sx={{ width: "100%", marginBottom: "10px" }}
                         />
@@ -149,12 +139,15 @@ export default function BasicModal({value, patch, id, edited, setEdited}) {
                             id="outlined-basic3"
                             label="Aadhar Number"
                             variant="outlined"
+                            value={aadhar}
                             onChange={aadharHandler}
                             sx={{ width: "100%", marginBottom: "10px" }}
                         />
-
-                        <Button onClick={addCustomerToDatabase} variant="contained" gutterBottom>Add Customer</Button>
-
+                        <Button onClick={addCustomerToDatabase} variant="contained" gutterBottom>
+                            {
+                                value === "Edit" ? `${value} Customer` : value
+                            }
+                        </Button>
                     </Box>
                 </Box>
             </Modal>

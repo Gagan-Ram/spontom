@@ -91,7 +91,7 @@ export default function Home() {
 
                     <article>
                         <SearchBar classes="mobile" searchHandler={searchHandler} />
-                        <BasicModal value="Add Customer" patch="false" edited={edited} setEdited={setEdited}  />
+                        <BasicModal value="Add Customer" patch="false" edited={edited} setEdited={setEdited} customersDetails={filteredCustomers} />
                     </article>
                 </header>
 
