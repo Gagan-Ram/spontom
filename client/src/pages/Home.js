@@ -42,7 +42,7 @@ export default function Home() {
 
     const searchHandler = (event) => {
         const value = event.target.value;
-        if (value.length === 10) {
+        if (value.length >= 10) {
             setMobileNumber(value);
             setSearchForCustomer(true);
         } else {
@@ -56,8 +56,14 @@ export default function Home() {
         try {
             const response = await axios.get(api);
             console.log(response.data);
-            enqueueSnackbar("Found Customer", { variant: "success" });
-            setFilteredCustomers(response.data);
+            if(response.data.length !== 0){
+                setFilteredCustomers(response.data);
+                enqueueSnackbar("Found Customer", { variant: "success" });
+            }
+            else{
+                enqueueSnackbar("No customer found in the database", { variant: "warning" });
+                setFilteredCustomers([]);
+            }
         } catch (error) {
             enqueueSnackbar("Couldn't find a customer from the database", { variant: "error" });
             setFilteredCustomers([]);
@@ -97,7 +103,7 @@ export default function Home() {
 
                 <main>
                     <Box>
-                        <CustomerTable  customersDetails={filteredCustomers}  />
+                        <CustomerTable customersDetails={filteredCustomers} edited={edited} setEdited={setEdited} />
                     </Box>
                 </main>
             </Box>

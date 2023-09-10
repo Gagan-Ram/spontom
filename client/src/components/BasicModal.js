@@ -61,7 +61,8 @@ export default function BasicModal({ value, patch, id, edited, setEdited, custom
             enqueueSnackbar("Customer Added", { variant: "success" });
             setEdited(!edited);
         } catch (error) {
-            enqueueSnackbar("Couldn't upload to the database", { variant: "error" });
+            const errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+            enqueueSnackbar(errormessage, { variant: "error" });
         }
     }
 
@@ -76,12 +77,15 @@ export default function BasicModal({ value, patch, id, edited, setEdited, custom
         };
 
         try {
-            const response = await axios.patch(api, body);
+            const response = await axios.patch(api, body)
             console.log(response.data);
             enqueueSnackbar("Customer patched", { variant: "success" });
             setEdited(!edited);
+
         } catch (error) {
-            enqueueSnackbar("Couldn't patch customer details to the database", { variant: "error" });
+            // console.log("hihi")
+            const errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+            enqueueSnackbar(errormessage, { variant: "error" });
         }
     }
 
@@ -90,6 +94,10 @@ export default function BasicModal({ value, patch, id, edited, setEdited, custom
             patchToDatabase();
         } else {
             uploadToDatabase();
+            setFirstName('')
+            setLastName('')
+            setMobile('')
+            setAadhar('')
         }
         handleClose();
     }
