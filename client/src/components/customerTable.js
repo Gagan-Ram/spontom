@@ -13,7 +13,7 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack'
 import { config } from '../App';
 
-export default function CustomerTable({ customersDetails, edited, setEdited }) {
+export default function CustomerTable({ customersDetails, editHappened}) {
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -22,9 +22,9 @@ export default function CustomerTable({ customersDetails, edited, setEdited }) {
         const api = `${config.endpoint}/customer/${id}`;
         try {
             const response = await axios.delete(api);
-            // console.log(response.data);
+            console.log(response.data);
             enqueueSnackbar("customer deleted successfully", { variant: "success" });
-            setEdited(!edited);
+            editHappened();
         } catch (error) {
             enqueueSnackbar("couldn't able to delete customer", { variant: "error" });
         }
@@ -65,7 +65,7 @@ export default function CustomerTable({ customersDetails, edited, setEdited }) {
                                     <TableCell align="right">{"+91 " + row.mobile}</TableCell>
                                     <TableCell align="right">{row.aadhar}</TableCell>
                                     <TableCell align="right" >
-                                        <BasicModal value="Edit" patch="true" id={row._id} customerDetailsFromCustomerTable={row} edited={edited} setEdited={setEdited} />
+                                        <BasicModal value="Edit" patch="true" id={row._id} customerDetailsFromCustomerTable={row} editHappened={editHappened} />
                                     </TableCell>
                                     <TableCell align="right" onClick={handleDeleteCustomer} id={row._id} ><DeleteIcon color='error' /></TableCell>
                                 </TableRow>

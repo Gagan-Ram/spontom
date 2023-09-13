@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import CustomerTable from '../components/customerTable';
@@ -50,6 +50,10 @@ export default function Home() {
         }
     }
 
+    const editHappened = useCallback(()=>{
+     setEdited(!edited) 
+    },[edited])
+
     async function searchCustomer(mobile) {
         const api = `${config.endpoint}/customer/${mobile}`;
 
@@ -97,13 +101,13 @@ export default function Home() {
 
                     <article>
                         <SearchBar classes="mobile" searchHandler={searchHandler} />
-                        <BasicModal value="Add Customer" patch="false" edited={edited} setEdited={setEdited} customersDetails={filteredCustomers} />
+                        <BasicModal value="Add Customer" patch="false" editHappened={editHappened} customersDetails={filteredCustomers} />
                     </article>
                 </header>
 
                 <main>
                     <Box>
-                        <CustomerTable customersDetails={filteredCustomers} edited={edited} setEdited={setEdited} />
+                        <CustomerTable customersDetails={filteredCustomers} editHappened={editHappened} />
                     </Box>
                 </main>
             </Box>

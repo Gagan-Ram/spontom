@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal({ value, patch, id, edited, setEdited, customerDetailsFromCustomerTable }) {
+export default function BasicModal({ value, patch, id, editHappened, customerDetailsFromCustomerTable }) {
     const { enqueueSnackbar } = useSnackbar();
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -59,16 +59,32 @@ export default function BasicModal({ value, patch, id, edited, setEdited, custom
             const response = await axios.post(api, body);
             console.log(response.data);
             enqueueSnackbar("Customer Added", { variant: "success" });
-            setEdited(!edited);
+            editHappened();
         } catch (error) {
-            const errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+
+            /*
+             *  error.response.data.message is Mongoose modal error  --> mobile, aadhar uniqueness check
+             *  error.response.data.details[0].message is JOI validation error  
+             */
+
+            let errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+
+            // console.log("errormessage == "+ error.response.data.message) 
+            if (errormessage !== error.response.data.message) {
+                if (error.response.data.details[0].message.includes("mobile")) {
+                    errormessage = "mobile invalid"
+                }
+                else if (error.response.data.details[0].message.includes("aadhar")) {
+                    errormessage = "aaadhar invalid"
+                }
+            }
             enqueueSnackbar(errormessage, { variant: "error" });
         }
     }
-
+    
     async function patchToDatabase() {
         const api = `${config.endpoint}/customer/${id}`;
-
+        
         const body = {
             "firstName": firstName,
             "lastName": lastName,
@@ -80,11 +96,21 @@ export default function BasicModal({ value, patch, id, edited, setEdited, custom
             const response = await axios.patch(api, body)
             console.log(response.data);
             enqueueSnackbar("Customer patched", { variant: "success" });
-            setEdited(!edited);
-
+            editHappened();
+            
         } catch (error) {
             // console.log("hihi")
-            const errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+            let errormessage = error.response.data.message ? error.response.data.message : error.response.data.details[0].message
+            
+            if (errormessage !== error.response.data.message) {
+                if (error.response.data.details[0].message.includes("mobile")) {
+                    errormessage = "mobile invalid"
+                }
+                else if (error.response.data.details[0].message.includes("aadhar")) {
+                    errormessage = "aaadhar invalid"
+                }
+            }
+
             enqueueSnackbar(errormessage, { variant: "error" });
         }
     }
